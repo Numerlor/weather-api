@@ -29,6 +29,11 @@ async def root():  # noqa: ANN201
     return {"message": "Hello World"}
 
 
+@app.get("/healthcheck/")
+async def healthcheck():  # noqa: ANN201
+    return "ok"
+
+
 @app.post("/weather/")
 async def receive_weather(data: WeatherItem):  # noqa: ANN201
     pool = await get_database()
