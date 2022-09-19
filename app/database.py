@@ -35,6 +35,8 @@ async def get_database() -> aiomysql.Connection:
             )
             """)
             # fmt: on
+        await _database.commit()
+
     return _database
 
 
