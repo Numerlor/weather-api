@@ -3,6 +3,18 @@ from fastapi import FastAPI
 from .database import close_database, get_database
 from .weather_model import WeatherItem
 
+_DB_COLS = [
+    "station_name",
+    "latitude",
+    "longitude",
+    "local_time",
+    "humidity",
+    "temperature",
+    "wind_speed",
+    "wind_angle",
+    "clouds",
+]
+
 app = FastAPI()
 
 
@@ -19,30 +31,32 @@ async def root():  # noqa: ANN201
 
 @app.post("/weather/")
 async def receive_weather(data: WeatherItem):  # noqa: ANN201
-    con = await get_database()
-    async with con.cursor() as cur:
-        await cur.execute(
-            """
-            INSERT INTO weather_data(
-                station_name, latitude, longitude, local_time, humidity, temperature, wind_speed, wind_angle, clouds
+    pool = await get_database()
+
+    async with pool.acquire() as con:
+        async with con.cursor() as cur:
+            await cur.execute(
+                f"""
+                INSERT INTO weather_data({', '.join(_DB_COLS)})
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
+                tuple(data.dict().values()),
             )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
-            tuple(data.dict().values()),
-        )
-    await con.commit()
+        await con.commit()
     return {"status": "ok"}
 
 
 @app.get("/weather/")
 async def send_weather(name: str | None = None):  # noqa: ANN201
-    con = await get_database()
-    async with con.cursor() as cur:
-        await cur.execute(
-            "SELECT * FROM weather_data WHERE station_name=%s",
-            (name if name is not None else True,),
-        )
-        column_names = [descr[0] for descr in cur.description]
-        return [
-            WeatherItem.parse_obj(dict(zip(column_names, row)))
-            for row in await cur.fetchall()
-        ]
+    pool = await get_database()
+
+    async with pool.acquire() as con:
+        async with con.cursor() as cur:
+            await cur.execute(
+                "SELECT * FROM weather_data WHERE station_name=%s",
+                (name if name is not None else True,),
+            )
+
+            return [
+                WeatherItem.parse_obj(dict(zip(_DB_COLS, row)))
+                for row in await cur.fetchall()
+            ]
