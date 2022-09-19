@@ -17,3 +17,5 @@ services:
       - DB_NAME
     ports:
       - 8000:80
+    volumes:
+      - "./app:/code/app"
