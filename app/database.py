@@ -2,7 +2,6 @@ import os
 
 import aiomysql
 
-
 _database: aiomysql.Connection | None = None
 
 
@@ -33,9 +32,9 @@ async def get_database() -> aiomysql.Connection:
                 wind_speed DECIMAL(5,2),
                 wind_angle SMALLINT,
                 clouds SMALLINT
-            )              
+            )
             """)
-
+            # fmt: on
     return _database
 
 
