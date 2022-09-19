@@ -52,8 +52,11 @@ async def send_weather(name: str | None = None):  # noqa: ANN201
     async with pool.acquire() as con:
         async with con.cursor() as cur:
             await cur.execute(
-                "SELECT * FROM weather_data WHERE station_name=%s",
-                (name if name is not None else True,),
+                f"SELECT {', '.join(_DB_COLS)} FROM weather_data WHERE station_name=%s OR %s",
+                (
+                    name,
+                    name is None,
+                ),
             )
 
             return [
