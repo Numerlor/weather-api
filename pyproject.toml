@@ -16,6 +16,7 @@ license = {text = "GPL-3.0-or-later"}
 
 [tool.pdm.dev-dependencies]
 lint = ["pre-commit==2.20.0"]
+client_test = ["httpx==0.23.0", "trio==0.21.0"]
 
 
 [tool.pyright]
