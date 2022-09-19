@@ -16,6 +16,9 @@ license = {text = "GPL-3.0-or-later"}
 lint = ["pre-commit==2.20.0"]
 
 
+[tool.pyright]
+typeCheckingMode = "strict"
+
 [build-system]
 requires = ["pdm-pep517>=1.0.0"]
 build-backend = "pdm.pep517.api"
