@@ -2,6 +2,10 @@ FROM python:3.10-slim
 
 WORKDIR /code
 
+RUN apt-get update
+
+RUN apt-get install curl -y
+
 RUN pip install pdm
 
 COPY pyproject.toml pdm.lock ./

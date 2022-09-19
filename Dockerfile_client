@@ -1,0 +1,13 @@
+FROM python:3.10-slim
+
+WORKDIR /code
+
+RUN pip install pdm
+
+COPY pyproject.toml pdm.lock ./
+
+RUN pdm install --prod -G client
+
+COPY ./simulated_client.py /code/simulated_client.py
+
+CMD ["pdm", "run", "python", "/code/simulated_client.py"]
