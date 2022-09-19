@@ -1,0 +1,15 @@
+services:
+  database:
+    image: mysql:8.0.30
+    environment:
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_PASSWORD
+      - MYSQL_USER
+      - MYSQL_DATABASE
+
+  site:
+    build: .
+    environment:
+      - DATABASE_URL
+    ports:
+      - 8000:80
